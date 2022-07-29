@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,shrink-to-fit=no"
+    />
+    <title>Ifram Testing</title>
+  </head>
+  <body>
+    <nav class="navbar">Brand Header</nav>
+    <main class="content">
+      <iframe
+        id="myIframe"
+        src="https://app.ft.com"
+        allowtransparency="true"
+        frameborder="0"
+      ></iframe>
+    </main>
+    <script type="text/css">
+        * {
+            box-sizing: border-box;
+          }
+          
+          body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+          }
+          
+          .navbar {
+            position: fixed;
+            top: 0;
+            transition: 0.2s ease-in-out;
+            width: 100%;
+            z-index: 999;
+            background-color: #060606;
+            height: 50px; /* brand header height */
+          }
+          
+          .content {
+            position: fixed;
+            margin-top: 50px; /* brand header height */
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+          }
+          
+          .content iframe {
+            height: 100%;
+            width: 100%;
+          }
+          
+          .content iframe.ios {
+            min-width: 100%;
+            width: 1px;
+          }
+    </script>
+    <script type="text/javascript">
+        function IframeModule(headerHeight, iframeID) {
+            const iframe = document.getElementById(iframeID);
+            const isiOS = navigator.userAgent.match(/(iPod|iPhone|iPad)/);
+
+            function getIFrameHeight() {
+                return window.innerHeight - headerHeight + "px";
+            }
+
+            function setIFrameHeight() {
+                iframe.style.height = getIFrameHeight();
+            }
+
+            function registerOrientationChange(callback) {
+                window.addEventListener("orientationchange", function () {
+                const afterOrientationChange = function () {
+                    callback();
+                    window.removeEventListener("resize", afterOrientationChange);
+                };
+                window.addEventListener("resize", afterOrientationChange);
+                });
+            }
+
+            function init() {
+                window.addEventListener("DOMContentLoaded", setIFrameHeight);
+                if (isiOS) {
+                    iframe.setAttribute("scrolling", "no");
+                    iframe.classList.add("ios");
+                    registerOrientationChange(function () {
+                        if (window.matchMedia("(orientation: portrait)").matches) {
+                        document.getElementsByTagName("html")[0].style.height = "100vh";
+                        setTimeout(function () {
+                            document.getElementsByTagName("html")[0].style.height = "100%";
+                        }, 300);
+                        }
+                        setIFrameHeight();
+                    });
+                } else {
+                    registerOrientationChange(function () {
+                        setIFrameHeight();
+                    });
+                }
+            }
+
+            return {
+                init,
+            };
+        }
+        const iframeModule = new IframeModule(50, "myIframe");
+        iframeModule.init();
+    </script>
+  </body>
+</html>
